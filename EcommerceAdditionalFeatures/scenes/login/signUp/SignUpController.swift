@@ -81,9 +81,13 @@ class SignUpController: Controller<SignUpViewModel, LoginNavigationController> {
         else {
             return
         }
+        let user = User(uid : nil, name: name, surname: surname, email: email)
         
+       /* viewModel.registerUser(email: email, password: password, againPassword: againPassword, name: name, surname: surname) {
+            self.navController?.leaveFromLogin()
+        } */
         
-        viewModel.registerUser(email: email, password: password, againPassword: againPassword, name: name, surname: surname) {
+        viewModel.registerUser(email: user.email!, password: password, againPassword: againPassword, name: user.name!, surname: user.surname!) {
             self.navController?.leaveFromLogin()
         }
     }

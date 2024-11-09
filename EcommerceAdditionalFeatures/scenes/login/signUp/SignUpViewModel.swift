@@ -8,6 +8,10 @@
 
 class SignUpViewModel: ViewModel {
     
+    var currentUser: User? {
+        UserDefaultsService.instance.currentUser
+    }
+    
     
     func registerUser(email: String, password: String, againPassword: String, name: String, surname: String, completion: Handler?){
         if password != againPassword {

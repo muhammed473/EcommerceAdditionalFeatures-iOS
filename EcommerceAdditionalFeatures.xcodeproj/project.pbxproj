@@ -38,6 +38,8 @@
 		C47ACDE12CDF7EAC00080CE8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C47ACDE02CDF7EAC00080CE8 /* GoogleService-Info.plist */; };
 		C47ACDE42CDF803200080CE8 /* SplashController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47ACDE32CDF803200080CE8 /* SplashController.swift */; };
 		C47ACDE62CDF803C00080CE8 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47ACDE52CDF803C00080CE8 /* SplashViewModel.swift */; };
+		C47ACDE82CDFE68400080CE8 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47ACDE72CDFE68400080CE8 /* MainViewModel.swift */; };
+		C47ACDEA2CDFE6CE00080CE8 /* MainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47ACDE92CDFE6CE00080CE8 /* MainNavigationController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +78,8 @@
 		C47ACDE02CDF7EAC00080CE8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C47ACDE32CDF803200080CE8 /* SplashController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashController.swift; sourceTree = "<group>"; };
 		C47ACDE52CDF803C00080CE8 /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
+		C47ACDE72CDFE68400080CE8 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		C47ACDE92CDFE6CE00080CE8 /* MainNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +234,8 @@
 			isa = PBXGroup;
 			children = (
 				C47ACDD62CDF761800080CE8 /* MainController.swift */,
+				C47ACDE72CDFE68400080CE8 /* MainViewModel.swift */,
+				C47ACDE92CDFE6CE00080CE8 /* MainNavigationController.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -365,6 +371,8 @@
 				C47ACDB82CDF68B200080CE8 /* SignUpController.swift in Sources */,
 				C47ACDB52CDF67AC00080CE8 /* SignInViewModel.swift in Sources */,
 				C47ACDC52CDF6BEF00080CE8 /* Buttons.swift in Sources */,
+				C47ACDE82CDFE68400080CE8 /* MainViewModel.swift in Sources */,
+				C47ACDEA2CDFE6CE00080CE8 /* MainNavigationController.swift in Sources */,
 				C47ACDDB2CDF797500080CE8 /* UserDefaultsService.swift in Sources */,
 				C47ACDD02CDF737300080CE8 /* AuthService.swift in Sources */,
 				C47ACDD22CDF73D200080CE8 /* Service.swift in Sources */,
