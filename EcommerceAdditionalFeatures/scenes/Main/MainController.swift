@@ -46,4 +46,13 @@ class MainController: Controller<MainViewModel, LoginNavigationController> {
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        viewModel.checkSomeOneAddedEmail {
+            /// MARK: TO BE DONE
+            print("A new page will be shown")
+        }
+    }
+    
 }

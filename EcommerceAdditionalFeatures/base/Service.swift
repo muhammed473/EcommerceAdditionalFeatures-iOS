@@ -19,4 +19,8 @@ extension Service {
         let okAction = AlertModel(title: "Okay")
         AlertView.instance.show(type: type, message: message, actions: [okAction])
     }
+    
+    func showAlert(type: AlertType, message: String?, actions: [AlertModel]) {
+        AlertView.instance.show(type: type, message: message, actions: actions)
+    }
 }

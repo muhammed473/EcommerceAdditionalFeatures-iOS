@@ -8,14 +8,6 @@
 class MainViewModel: ViewModel {
     
     
-    func loveEmailAdd(email: String, completion: Handler?) {
-        fetchUser { user in
-            DatabaseService.instance.addLoveUser(currentUser: user, email: email, completion: completion)
-        }
-        
-    }
-    
-    
     func fetchUser(completion: Callback<User>?) {
         guard let user = UserDefaultsService.instance.currentUser else {
             return
@@ -23,4 +15,20 @@ class MainViewModel: ViewModel {
         completion?(user)
     }
     
+    
+    func loveEmailAdd(email: String, completion: Handler?) {
+        fetchUser { user in
+            DatabaseService.instance.addLoveUser(currentUser: user, email: email, completion: completion)
+        }
+    }
+    
+    
+    func checkSomeOneAddedEmail(completion: Handler?) {
+        DatabaseService.instance.checkEmailConfirmation(completion: completion)
+    }
+    
+   
 }
+
+
+
