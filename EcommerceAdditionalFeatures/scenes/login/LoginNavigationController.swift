@@ -44,4 +44,11 @@ class LoginNavigationController: NavigationController {
         mainController.modalPresentationStyle = .fullScreen
         present(mainController, animated: true, completion: nil)
     }
+    
+    func leaveFromMain(){
+        let orf = ProductsController()
+        
+        pushViewController(orf, animated: true)
+    }
+
 }

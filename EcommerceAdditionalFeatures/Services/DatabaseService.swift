@@ -15,6 +15,7 @@ struct DatabaseService: Service {
     private let db = Firestore.firestore()
     
     
+    
     private init() {
         
     }
@@ -84,6 +85,15 @@ struct DatabaseService: Service {
                         }
                         else {
                             show(message: "isEmailConfirmed is add success...", type: .success)
+                            
+                            db.collection("Users").document(loveUid).updateData(["partner": FieldValue.arrayUnion([user.email])]) { error in
+                                if let error = error {
+                                    show(message: "Hata: \(error.localizedDescription)", type: .error)
+                                } else {
+                                    // Başarı durumunda mesaj göster
+                                    show(message: "Partner e-posta başarıyla eklendi.", type: .success)
+                                }
+                            }
                         }
                     }
                 }
@@ -94,7 +104,7 @@ struct DatabaseService: Service {
     }
     
     
-    func checkEmailConfirmation(completion: Handler?) {
+    func checkEmailConfirmation(completion: Callback<Bool>?) {
         guard let userUid = UserDefaultsService.instance.currentUser?.uid else {
             show(message: "User is not found..", type: .error)
             return
@@ -105,28 +115,13 @@ struct DatabaseService: Service {
                 return
             }
             
-            if let data = snapshot.data(), let isEmailConfirmed = data["isEmailConfirmed"] as? Bool{
-                
-                if isEmailConfirmed {
-                    show(message: "E-mail confirmed.", type: .success)
-                } else {
-                    let noAction = AlertModel(title: "No")
-                    
-                    let yesAction = AlertModel(title: "Yes") {
-                        self.myConfirmEmail(completion:completion)
-                    }
-                    
-                    showAlert(type: .warning, message: "Someone added you as an e-mail, do you accept it?", actions: [noAction, yesAction])
-                }
-            } 
-            else {
-                show(message: "isEmailConfirmed field is not found.", type: .error)
-                completion?()
+            guard  let data = snapshot.data(), let isEmailConfirmed = data["isEmailConfirmed"] as? Bool else {
                 return
             }
-            
+            completion?(isEmailConfirmed)
         }
     }
+    
     
     func myConfirmEmail(completion: Handler?) {
         guard let userUid = UserDefaultsService.instance.currentUser?.uid else {
@@ -138,9 +133,65 @@ struct DatabaseService: Service {
             if let error = error {
                 print("Error updating confirmation: \(error)")
             } else {
-                print("Mehmet's email confirmed!")
+                print("Email confirmed!")
                 completion?()
             }
+            completion?()
+            
+            
+        }
+    }
+    
+    
+    func addedTheMailInformation(completion: Callback<String>?) {
+        guard let userUid = UserDefaultsService.instance.currentUser?.uid else {
+            show(message: "User is not found..", type: .error)
+            return
+        }
+        
+        db.collection("Users").document(userUid).getDocument { snapshot, error in
+            guard let snapshot = snapshot else {
+                return
+            }
+            
+            if let data = snapshot.data(),
+               let email = data["email"] as? String,
+               let partners = data["partner"]  as? [String]{
+                
+                if let partnerEmail = partners.first(where: { $0 != email }) {
+                    // partner'ı bulduk
+                    self.fetchPartnerInfo(partnerEmail: partnerEmail, completion: completion)
+                } else {
+                    show(message: "No matching partner found", type: .error)
+                }
+            }  else {
+                show(message: "User data is incomplete", type: .error)
+            }
+        }
+    }
+    
+    
+    func fetchPartnerInfo(partnerEmail: String, completion: Callback<String>?) {
+        // Partner'ın bilgilerini almak için ikinci sorguyu yapıyoruz :
+        db.collection("Users").whereField("email", isEqualTo: partnerEmail).getDocuments { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                return
+            }
+            
+            if let document = snapshot.documents.first {
+                let data = document.data()
+                // Partnerin bilgileri bulundu
+                let name = data["name"] as? String ?? "No name"
+                let surname = data["surname"] as? String ?? "No surname"
+                let email = data["email"] as? String ?? "No email"
+                
+                // Partnerin bilgilerini istediğin şekilde kullanabilirsin
+                print("Partner Info: \(name) \(surname), \(email)")
+                completion?(email)
+            } else {
+                show(message: "Partner not found in database", type: .error)
+            }
+            
         }
     }
     
@@ -148,5 +199,3 @@ struct DatabaseService: Service {
     
     
 }
-
-

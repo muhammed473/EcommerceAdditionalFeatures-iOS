@@ -7,4 +7,10 @@
 
 class MainNavigationController: NavigationController {
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let rootController = MainController()
+        viewControllers = [rootController]
+    }
 }

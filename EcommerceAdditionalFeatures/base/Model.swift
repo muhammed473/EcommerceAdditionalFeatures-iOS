@@ -5,10 +5,13 @@
 //  Created by muhammed dursun on 9.11.2024.
 //
 
+import UIKit
+
 struct AlertModel {
     let title: String?
     var action: Handler?
 }
+
 
 
 struct User: Codable {
@@ -16,4 +19,12 @@ struct User: Codable {
     let name: String?
     let surname: String?
     let email: String?
+}
+
+
+
+struct Products {
+    let productName: String?
+    let productImage: UIImage?
+    let productPrice: String?
 }

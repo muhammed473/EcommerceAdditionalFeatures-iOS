@@ -23,10 +23,56 @@ class MainViewModel: ViewModel {
     }
     
     
-    func checkSomeOneAddedEmail(completion: Handler?) {
+   /* func checkSomeOneAddedEmail(completion: Handler?) {
         DatabaseService.instance.checkEmailConfirmation(completion: completion)
+    } */
+    
+    
+  /*  func checkSomeOneAddedEmail(completion: Handler?) {
+        DatabaseService.instance.checkEmailConfirmation { isEmailConfirmed in
+            if isEmailConfirmed {
+                self.show(message: "E-mail confirmed", type: .success)
+            }
+            else {
+                let noAction = AlertModel(title: "No")
+                
+                let yesAction = AlertModel(title: "Yes") {
+                    DatabaseService.instance.myConfirmEmail(completion: completion)
+                    
+                    
+                    
+                }
+                
+                DatabaseService.instance.addedTheMailInformation { partnerEmail in
+                    self.showAlert(type: .warning, message: "\(partnerEmail) mailine sahip kişi sana davet gönderdi.Partnerinle ortak ürün zevklerini bulmaya var mısın? ", actions: [noAction, yesAction])
+                }
+              //  completion?()
+                
+            }
+            
+            
+        }
+    } */
+    
+    func checkSomeOneAddedEmail(completion: Callback<Bool>?) {
+          DatabaseService.instance.checkEmailConfirmation { isEmailConfirmed in
+             completion?(isEmailConfirmed)
+              
+              
+          }
+      }
+    
+    func confirmControl(completion: Handler?) {
+        DatabaseService.instance.myConfirmEmail {
+            completion?()
+        }
     }
     
+    func getAddedTheMailInformation(completion: Callback<String>?) {
+        DatabaseService.instance.addedTheMailInformation { partnerEmail in
+            completion?(partnerEmail)
+        }
+    }
    
 }
 
