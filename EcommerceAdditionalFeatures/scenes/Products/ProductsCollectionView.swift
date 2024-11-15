@@ -16,6 +16,8 @@ class ProductsCollectionViewCell: CollectionViewCell<Products> {
     private let productNameLabel = Label()
     private let productImage = ImageView()
     private let productPrice = Label()
+    private let likeButton = Button()
+    private let dislikeButton = Button()
     
     
     override func configure() {
@@ -25,7 +27,8 @@ class ProductsCollectionViewCell: CollectionViewCell<Products> {
         contentView.addSubview(productNameLabel)
         contentView.addSubview(productPrice)
         contentView.addSubview(productImage)
-        
+        contentView.addSubview(likeButton)
+        contentView.addSubview(dislikeButton)
         
         activateConstraints(
             productImage.safeAreaLayoutGuide.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 25),
@@ -36,12 +39,41 @@ class ProductsCollectionViewCell: CollectionViewCell<Products> {
             productNameLabel.leadingAnchor.constraint(equalTo: productImage.leadingAnchor),
             
             productPrice.topAnchor.constraint(equalTo: productNameLabel.bottomAnchor, constant: 10),
-            productPrice.leadingAnchor.constraint(equalTo: productImage.leadingAnchor)
+            productPrice.leadingAnchor.constraint(equalTo: productImage.leadingAnchor),
+            
+            likeButton.safeAreaLayoutGuide.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 5),
+            likeButton.bottomAnchor.constraint(equalTo: productImage.topAnchor, constant: 20),
+            likeButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -35),
+            
+            dislikeButton.safeAreaLayoutGuide.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 5),
+            dislikeButton.bottomAnchor.constraint(equalTo: productImage.topAnchor, constant: 20),
+            dislikeButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10)
         )
         
         productImage.clipsToBounds = true
         productImage.contentMode = .scaleAspectFit
         productImage.set(cornerRadius: 129)
+        
+        likeButton.setImage(.iconSuccess, for: .normal)
+        likeButton.layer.cornerRadius = 0.8
+        likeButton.action = likeButtonClicked
+        
+        dislikeButton.setImage(.iconWarning, for: .normal)
+        dislikeButton.layer.cornerRadius = 0.8
+        dislikeButton.action = dislikeButtonClicked
+    }
+    
+    
+    private func likeButtonClicked() {
+        print("PRİNT: Like button is clicked")
+        
+        likeButton.backgroundColor = .systemGreen
+    }
+    
+    
+    private func dislikeButtonClicked() {
+        print("PRİNT: Dislike button is clikced")
+        dislikeButton.backgroundColor = .systemRed
     }
     
     
