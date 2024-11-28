@@ -68,6 +68,21 @@ class ProductsCollectionViewCell: CollectionViewCell<Products> {
         print("PRİNT: Like button is clicked")
         
         likeButton.backgroundColor = .systemGreen
+        guard
+            let price = productPrice.text,
+            let name = productNameLabel.text
+          //  let resim = productImage.image
+        else {
+            return
+        }
+    
+        let product = Products(uid: nil, productName: name, productPrice: price)
+         DatabaseService.instance.savePopularProducts(product: product) {
+             print("PRİNT: DATABASE 'E ÜRÜN KAYDEDİLDİ.")
+             DatabaseService.instance.control3 {
+                 print("PRİNT: 2 KİŞİ AYNI ÜRÜNÜ BEĞENDİ BRAVO !!!!!!")
+             }
+         }
     }
     
     
@@ -80,8 +95,8 @@ class ProductsCollectionViewCell: CollectionViewCell<Products> {
     override func setItem(item: Products) {
         productNameLabel.text = item.productName
         productPrice.text = item.productPrice
-       // productImage.load(photoUrl: item.productImageUrl)
-        productImage.image = item.productImage
+     //   productImage.load(photoUrl: item.productImageUrl)
+      //  productImage.image = item.productImage
     }
 }
 

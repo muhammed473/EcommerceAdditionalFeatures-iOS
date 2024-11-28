@@ -32,13 +32,14 @@ class MainViewModel: ViewModel {
         DatabaseService.instance.checkEmailConfirmation { isEmailConfirmed in
             if isEmailConfirmed {
                 self.show(message: "E-mail confirmed", type: .success)
+                completion?()
             }
             else {
                 let noAction = AlertModel(title: "No")
                 
                 let yesAction = AlertModel(title: "Yes") {
                     DatabaseService.instance.myConfirmEmail(completion: completion)
-                    
+                   // completion?()
                     
                     
                 }
@@ -46,7 +47,7 @@ class MainViewModel: ViewModel {
                 DatabaseService.instance.addedTheMailInformation { partnerEmail in
                     self.showAlert(type: .warning, message: "\(partnerEmail) mailine sahip kişi sana davet gönderdi.Partnerinle ortak ürün zevklerini bulmaya var mısın? ", actions: [noAction, yesAction])
                 }
-              //  completion?()
+                completion?()
                 
             }
             
@@ -54,7 +55,7 @@ class MainViewModel: ViewModel {
         }
     } */
     
-    func checkSomeOneAddedEmail(completion: Callback<Bool>?) {
+   func checkSomeOneAddedEmail(completion: Callback<Bool>?) {
           DatabaseService.instance.checkEmailConfirmation { isEmailConfirmed in
              completion?(isEmailConfirmed)
               
@@ -72,6 +73,10 @@ class MainViewModel: ViewModel {
         DatabaseService.instance.addedTheMailInformation { partnerEmail in
             completion?(partnerEmail)
         }
+    }
+    
+    func partnerFor(completion: Callback<Bool>?) {
+        DatabaseService.instance.otherPersonForCheckEmailConfirmation(completion: completion)
     }
    
 }

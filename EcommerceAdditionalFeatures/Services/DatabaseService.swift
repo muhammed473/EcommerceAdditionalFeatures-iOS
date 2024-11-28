@@ -123,6 +123,56 @@ struct DatabaseService: Service {
     }
     
     
+    func otherPersonForCheckEmailConfirmation(completion: Callback<Bool>?) {
+        guard let userUid = UserDefaultsService.instance.currentUser?.uid else {
+            show(message: "User is not found..", type: .error)
+            return
+        }
+        
+        db.collection("Users").document(userUid).getDocument { snapshot, error in
+            guard let snapshot = snapshot else {
+                return
+            }
+            
+            if let data = snapshot.data(),
+               let email = data["email"] as? String,
+               let partners = data["partner"]  as? [String]{
+                
+                if let partnerEmail = partners.first(where: { $0 != email }) {
+                    // partner'ı bulduk
+                    self.otherPersonForFetchPartnerInfo(partnerEmail: partnerEmail, completion: completion)
+                }
+                else {
+                    show(message: "PRİNT: PARTNER'IN BİLGİLERİNE ULAŞAMADIM.", type: .error)
+                }
+            }
+            
+        }
+    }
+    
+    
+    func otherPersonForFetchPartnerInfo(partnerEmail: String, completion: Callback<Bool>?) {
+        // Partner'ın bilgilerini almak için ikinci sorguyu yapıyoruz :
+        db.collection("Users").whereField("email", isEqualTo: partnerEmail).getDocuments { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                return
+            }
+            
+            if let document = snapshot.documents.first {
+                let data = document.data()
+                // Partnerin bilgileri bulundu
+                let isEmailConfirmed = data["isEmailConfirmed"] as? Bool ?? false
+                print("PRİNT: Partner'in onaylama durumu : \(isEmailConfirmed)")
+                completion?(isEmailConfirmed)
+            } else {
+                show(message: "PARTNERİN MAİLİ ONAYLAYIP ONAYLAMADIĞINI BULAMADIM !!!", type: .error)
+            }
+            
+        }
+        
+    }
+    
+    
     func myConfirmEmail(completion: Handler?) {
         guard let userUid = UserDefaultsService.instance.currentUser?.uid else {
             show(message: "Kullanıcı bulunamadı.", type: .error)
@@ -196,6 +246,155 @@ struct DatabaseService: Service {
     }
     
     
+    func savePopularProducts(product: Products, completion: Handler?) {
+        guard let currentUserUid = UserDefaultsService.instance.currentUser?.uid else {
+            show(message: "User is not found.", type: .error)
+            return
+        }
+        
+        db.collection("ProductSelections").document(currentUserUid).collection("PopularProducts").document().setData(product.dictionary) { error in
+            if let error = error  {
+                return
+            }
+            completion?()
+        }
+    }
     
     
+    func checkLikeProducts(completion: Callback<String>?) {
+        guard let userUid = UserDefaultsService.instance.currentUser?.uid else {
+            show(message: "User is not found..", type: .error)
+            return
+        }
+        
+        db.collection("Users").document(userUid).getDocument { snapshot, error in
+            guard let snapshot = snapshot else {
+                return
+            }
+            
+            if let data = snapshot.data(),
+               let email = data["email"] as? String,
+               let partners = data["partner"]  as? [String]{
+                
+                if let partnerEmail = partners.first(where: { $0 != email }) {
+                    // partner'ı bulduk
+                    self.fetchPartnerUid(partnerEmail: partnerEmail, completion: completion)
+                } else {
+                    show(message: "No matching partner found", type: .error)
+                }
+            }  else {
+                show(message: "User data is incomplete", type: .error)
+            }
+        }
+         
+    }
+   
+    
+    func fetchPartnerUid(partnerEmail: String, completion: Callback<String>?) {
+        // Partner'ın bilgilerini almak için ikinci sorguyu yapıyoruz :
+        db.collection("Users").whereField("email", isEqualTo: partnerEmail).getDocuments { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                return
+            }
+            
+            if let document = snapshot.documents.first {
+                let data = document.data()
+                // Partnerin bilgileri bulundu
+                let uid = data["uid"] as? String ?? "nil"
+
+                // Partnerin bilgilerini istediğin şekilde kullanabilirsin
+                print("Partner uid: , \(uid)")
+                completion?(uid)
+            } else {
+                show(message: "Partner not found in database", type: .error)
+            }
+            
+        }
+    }
+   
+    
+    func currentProductControl2(completion: Callback<[String]>?) {
+        guard let currentUserUid = UserDefaultsService.instance.currentUser?.uid else {
+            return
+        }
+        
+        db.collection("ProductSelections").document(currentUserUid).collection("PopularProducts").getDocuments { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                return
+            }
+          
+            var likeCurrentProducts: [Products] = []
+            
+            for likeProduct in snapshot.documents {
+                self.db.collection("ProductSelections").document(currentUserUid).collection("PopularProducts").document(likeProduct.documentID).getDocument { documentSnapshot, error in
+                    guard let documentSnapshot = documentSnapshot, error == nil else {
+                        return
+                    }
+                    let product = Products(uid: documentSnapshot.documentID, productName: documentSnapshot.get("productName") as? String, productPrice: documentSnapshot.get("productPrice") as? String)
+                    likeCurrentProducts.append(product)
+                    
+                    let productNames = likeCurrentProducts.compactMap { $0.productName }
+                   completion?(productNames)
+                }
+            }
+            
+            
+        }
+        
+    }
+    
+ 
+    func control1(completion: Callback<[Products]>?) {
+        checkLikeProducts { partnerUid in
+            db.collection("ProductSelections").document(partnerUid).collection("PopularProducts").getDocuments { snapshot, error in
+                guard let snapshot = snapshot, error == nil else {
+                    return
+                }
+                
+                var likePartnerProducts: [Products] = []
+                
+                for likeProduct in snapshot.documents {
+                    self.db.collection("ProductSelections").document(partnerUid).collection("PopularProducts").document(likeProduct.documentID).getDocument { documentSnapshot, error in
+                        guard let documentSnapshot = documentSnapshot, error == nil else {
+                            return
+                        }
+                        let product = Products(uid: documentSnapshot.documentID, productName: documentSnapshot.get("productName") as? String, productPrice: documentSnapshot.get("productPrice") as? String)
+                        likePartnerProducts.append(product)
+                        completion?(likePartnerProducts)
+                    }
+
+                }
+               
+                
+            }
+        }
+    }
+    
+    
+    func control2(completion: Callback<[String]>?) {
+        control1  { likePartnerProducts in
+            let productPartnerNames = likePartnerProducts.compactMap { $0.productName }
+            completion?(productPartnerNames)
+        }
+    }
+    
+    
+    func control3(completion: Handler?) {
+        self.control2 { productPartnerNames in
+    
+            self.currentProductControl2 { productCurrentNames in
+               
+                let matchingNames = productPartnerNames.filter { productCurrentNames.contains($0) }
+                
+                if !matchingNames.isEmpty {
+                    for name in matchingNames {
+                        print("Eşleşen ürün: \(name)")
+                        completion?()
+                    }
+                } else {
+                    print("Eşleşen ürün bulunamadı.")
+                }
+            }
+        }
+    }
 }

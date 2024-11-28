@@ -7,4 +7,6 @@
 
 class ProductsViewModel: ViewModel {
     
+    
+    
 }

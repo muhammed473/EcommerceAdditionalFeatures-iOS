@@ -23,8 +23,9 @@ struct User: Codable {
 
 
 
-struct Products {
+struct Products: Codable {
+    let uid: String?
     let productName: String?
-    let productImage: UIImage?
+   // let productImageUrl: String?
     let productPrice: String?
 }

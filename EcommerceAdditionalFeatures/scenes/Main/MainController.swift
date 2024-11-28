@@ -74,6 +74,22 @@ class MainController: Controller<MainViewModel, MainNavigationController> {
             }
         }
         
+       /* viewModel.checkSomeOneAddedEmail {
+            print("asssss")
+        } */
+        
+        viewModel.partnerFor { isEmailConfirmed in
+            if isEmailConfirmed {
+                let productsController = ProductsController()
+                productsController.modalPresentationStyle = .fullScreen
+                self.present(productsController, animated: true, completion: nil)
+            }
+            else {
+                print("Product ekranına geçilemedi.")
+            }
+           
+        }
+        
     }
     
     
