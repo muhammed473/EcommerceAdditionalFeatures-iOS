@@ -5,11 +5,11 @@
 //  Created by muhammed dursun on 14.11.2024.
 //
 
+import UIKit
+
 class ProductsCollectionView: CollectionView<Products, ProductsCollectionViewCell, ProductsFlowLayout> {
     
 }
-
-
 
 class ProductsCollectionViewCell: CollectionViewCell<Products> {
     
@@ -18,6 +18,8 @@ class ProductsCollectionViewCell: CollectionViewCell<Products> {
     private let productPrice = Label()
     private let likeButton = Button()
     private let dislikeButton = Button()
+    
+    var eslesilenUrun: String?
     
     
     override func configure() {
@@ -70,19 +72,22 @@ class ProductsCollectionViewCell: CollectionViewCell<Products> {
         likeButton.backgroundColor = .systemGreen
         guard
             let price = productPrice.text,
-            let name = productNameLabel.text
-          //  let resim = productImage.image
+            let name = productNameLabel.text,
+            let resim = productImage.image
         else {
             return
         }
     
-        let product = Products(uid: nil, productName: name, productPrice: price)
-         DatabaseService.instance.savePopularProducts(product: product) {
-             print("PRİNT: DATABASE 'E ÜRÜN KAYDEDİLDİ.")
-             DatabaseService.instance.control3 {
-                 print("PRİNT: 2 KİŞİ AYNI ÜRÜNÜ BEĞENDİ BRAVO !!!!!!")
-             }
-         }
+        let product = Products(uid: nil, productName: name, productImageUrl: resim.jpegData(compressionQuality: 0.8)?.base64EncodedString() , productPrice: price)
+        DatabaseService.instance.savePopularProducts(product: product) {
+            print("PRİNT: DATABASE 'E ÜRÜN KAYDEDİLDİ.")
+            DatabaseService.instance.control3 { eslesilenUrunum in
+              print("Product Collection View Cellde ' esleşilen ürünü yakaladım : \(eslesilenUrunum)")
+                self.eslesilenUrun = eslesilenUrunum
+                (self.superview?.next?.next as? ProductsController)?.handlerMatchedProduct(name: eslesilenUrunum)
+            }
+        }
+        
     }
     
     
@@ -96,7 +101,7 @@ class ProductsCollectionViewCell: CollectionViewCell<Products> {
         productNameLabel.text = item.productName
         productPrice.text = item.productPrice
      //   productImage.load(photoUrl: item.productImageUrl)
-      //  productImage.image = item.productImage
+        productImage.image = UIImage(named: item.productImageUrl!)
     }
 }
 
@@ -120,4 +125,6 @@ class ProductsFlowLayout: CollectionViewFlowLayout {
     }
     
 }
+
+
 

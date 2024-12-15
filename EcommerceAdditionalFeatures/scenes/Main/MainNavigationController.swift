@@ -13,4 +13,9 @@ class MainNavigationController: NavigationController {
         let rootController = MainController()
         viewControllers = [rootController]
     }
+    
+    func gec(urun: String) {
+        let matchedController = MatchedController()
+        present(matchedController, animated: true)
+    }
 }

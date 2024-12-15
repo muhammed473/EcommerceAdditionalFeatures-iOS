@@ -26,6 +26,6 @@ struct User: Codable {
 struct Products: Codable {
     let uid: String?
     let productName: String?
-   // let productImageUrl: String?
+    let productImageUrl: String?
     let productPrice: String?
 }

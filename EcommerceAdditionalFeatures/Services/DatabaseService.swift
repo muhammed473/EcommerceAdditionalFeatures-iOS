@@ -330,7 +330,7 @@ struct DatabaseService: Service {
                     guard let documentSnapshot = documentSnapshot, error == nil else {
                         return
                     }
-                    let product = Products(uid: documentSnapshot.documentID, productName: documentSnapshot.get("productName") as? String, productPrice: documentSnapshot.get("productPrice") as? String)
+                    let product = Products(uid: documentSnapshot.documentID, productName: documentSnapshot.get("productName") as? String, productImageUrl: documentSnapshot.get("productImageUrl") as? String, productPrice: documentSnapshot.get("productPrice") as? String)
                     likeCurrentProducts.append(product)
                     
                     let productNames = likeCurrentProducts.compactMap { $0.productName }
@@ -358,7 +358,7 @@ struct DatabaseService: Service {
                         guard let documentSnapshot = documentSnapshot, error == nil else {
                             return
                         }
-                        let product = Products(uid: documentSnapshot.documentID, productName: documentSnapshot.get("productName") as? String, productPrice: documentSnapshot.get("productPrice") as? String)
+                        let product = Products(uid: documentSnapshot.documentID, productName: documentSnapshot.get("productName") as? String, productImageUrl: documentSnapshot.get("productImageUrl") as? String, productPrice: documentSnapshot.get("productPrice") as? String)
                         likePartnerProducts.append(product)
                         completion?(likePartnerProducts)
                     }
@@ -379,7 +379,7 @@ struct DatabaseService: Service {
     }
     
     
-    func control3(completion: Handler?) {
+    func control3(completion: Callback<String>?) {
         self.control2 { productPartnerNames in
     
             self.currentProductControl2 { productCurrentNames in
@@ -389,7 +389,7 @@ struct DatabaseService: Service {
                 if !matchingNames.isEmpty {
                     for name in matchingNames {
                         print("Eşleşen ürün: \(name)")
-                        completion?()
+                        completion?(name)
                     }
                 } else {
                     print("Eşleşen ürün bulunamadı.")
@@ -397,4 +397,30 @@ struct DatabaseService: Service {
             }
         }
     }
+    
+    
+    func matchedProductShow(urunAdi: String, completion: Callback<Products>?) {
+        guard let currentUserUid = UserDefaultsService.instance.currentUser?.uid else {
+            return
+        }
+        
+        db.collection("ProductSelections").document(currentUserUid).collection("PopularProducts").whereField("productName", isEqualTo:urunAdi).getDocuments { snapshots, error in
+            guard let snapshots = snapshots, error == nil else {
+                return
+            }
+            if let document = snapshots.documents.first {
+                let data = document.data()
+                let urunAdi = data["productName"] as? String ?? "Eşleşen ürün Matched sayfasında bulunamadı."
+                let urunResim = data["productImageUrl"] as? String
+                let urunFiyati = data["productPrice"] as? String
+                let product = Products(uid: nil, productName: urunAdi, productImageUrl: urunResim, productPrice: urunFiyati)
+                completion?(product)
+            }
+            else {
+                show(message: "Eşleşen ürünü Matched sayfasında göstermede sıkıntı var", type: .error)
+            }
+            
+        }
+    }
+    
 }
